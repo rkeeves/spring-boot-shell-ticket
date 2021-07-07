@@ -13,7 +13,7 @@ public class EchoCommands {
     @ShellMethod(key = "echo",
             value = "Echoes the given string")
     public String echo(String message) {
-       return message;
+        return message;
     }
 
     @ShellMethod(key = "echo optional",
