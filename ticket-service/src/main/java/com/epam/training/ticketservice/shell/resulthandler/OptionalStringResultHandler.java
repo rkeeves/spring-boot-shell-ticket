@@ -13,9 +13,10 @@ public class OptionalStringResultHandler implements ResultHandler<Optional<Strin
 
     @Override
     public void handleResult(Optional<String> s) {
-        if (s.isPresent()) {
-            terminal.writer().println(s.get());
-            terminal.flush();
+        if (s.isEmpty() || s.get().isEmpty()) {
+            return;
         }
+        terminal.writer().println(s.get());
+        terminal.flush();
     }
 }
