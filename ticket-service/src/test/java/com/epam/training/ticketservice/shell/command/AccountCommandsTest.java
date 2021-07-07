@@ -192,16 +192,54 @@ class AccountCommandsTest {
     }
 
     @Test
-    void givenUserIsSignedIn_whenDescribeAccount_thenReturnUserSpecificMessage() {
+    void givenNonPrivilegedUserIsSignedIn_whenDescribeAccount_thenReturnUserSpecificMessage() {
         // given
         var username = "username";
-        var expected = String.format("Signed in with account '%s'", username);
+        var expected = String.format("Signed in with account '%s'", username)
+                + System.lineSeparator()
+                + "You have not booked any tickets yet";
         when(securityService.username())
                 .thenReturn(Optional.of(username));
+        when(securityService.isAuthenticated())
+                .thenReturn(true);
+        when(securityService.isPrivileged())
+                .thenReturn(false);
         // when
         var result = accountCommands.describeAccount();
         // then
         assertEquals(expected, result);
+        verify(securityService, times(1))
+                .isAuthenticated();
+        verify(securityService, times(1))
+                .isPrivileged();
+        verify(securityService, times(1))
+                .username();
+        verifyNoMoreInteractions(securityService);
+        verifyNoMoreInteractions(signInSignOutService);
+        verifyNoMoreInteractions(signUpService);
+    }
+
+    @Test
+    void givenPrivilegedUserIsSignedIn_whenDescribeAccount_thenReturnAdminSpecificMessage() {
+        // given
+        var username = "username";
+        var expected = String.format("Signed in with privileged account '%s'", username)
+                + System.lineSeparator()
+                + "You have not booked any tickets yet";
+        when(securityService.username())
+                .thenReturn(Optional.of(username));
+        when(securityService.isAuthenticated())
+                .thenReturn(true);
+        when(securityService.isPrivileged())
+                .thenReturn(true);
+        // when
+        var result = accountCommands.describeAccount();
+        // then
+        assertEquals(expected, result);
+        verify(securityService, times(1))
+                .isAuthenticated();
+        verify(securityService, times(1))
+                .isPrivileged();
         verify(securityService, times(1))
                 .username();
         verifyNoMoreInteractions(securityService);
