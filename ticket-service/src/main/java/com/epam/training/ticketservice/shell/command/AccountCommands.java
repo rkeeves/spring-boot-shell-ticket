@@ -69,9 +69,19 @@ public class AccountCommands extends SecuredCommand {
             key = {"describe account"},
             value = "Describes the currently signed in user")
     public String describeAccount() {
-        return getSecurityService()
-                .username()
-                .map(username -> String.format("Signed in with account '%s'", username))
-                .orElse("You are not signed in");
+        var usernameOptional = getSecurityService().username();
+        if (usernameOptional.isEmpty() || !getSecurityService().isAuthenticated()) {
+            return "You are not signed in";
+        }
+        var username = usernameOptional.get();
+        StringBuilder sb = new StringBuilder();
+        if (getSecurityService().isPrivileged()) {
+            sb.append(String.format("Signed in with privileged account '%s'", username));
+        } else {
+            sb.append(String.format("Signed in with account '%s'", username));
+        }
+        sb.append(System.lineSeparator());
+        sb.append("You have not booked any tickets yet");
+        return sb.toString();
     }
 }
