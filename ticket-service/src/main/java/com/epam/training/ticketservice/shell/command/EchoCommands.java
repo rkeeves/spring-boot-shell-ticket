@@ -19,7 +19,7 @@ public class EchoCommands {
     @ShellMethod(key = "echo optional",
             value = "Echoes the given string if it is not 'null' otherwise does not echo")
     public Optional<String> echoOptional(String message) {
-        if("null".equals(message)){
+        if ("null".equals(message)) {
             return Optional.empty();
         }
         return Optional.of(message);
