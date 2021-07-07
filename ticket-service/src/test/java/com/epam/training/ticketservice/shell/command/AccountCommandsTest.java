@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -183,7 +184,7 @@ class AccountCommandsTest {
         // when
         var result = accountCommands.describeAccount();
         // then
-        assertEquals("You are not signed in", result);
+        assertEquals(List.of("You are not signed in"), result);
         verify(securityService, times(1))
                 .username();
         verifyNoMoreInteractions(securityService);
@@ -195,9 +196,9 @@ class AccountCommandsTest {
     void givenNonPrivilegedUserIsSignedIn_whenDescribeAccount_thenReturnUserSpecificMessage() {
         // given
         var username = "username";
-        var expected = String.format("Signed in with account '%s'", username)
-                + System.lineSeparator()
-                + "You have not booked any tickets yet";
+        var greetLine = String.format("Signed in with account '%s'", username);
+        var expected = List.of(greetLine,
+                "You have not booked any tickets yet");
         when(securityService.username())
                 .thenReturn(Optional.of(username));
         when(securityService.isAuthenticated())
@@ -223,9 +224,9 @@ class AccountCommandsTest {
     void givenPrivilegedUserIsSignedIn_whenDescribeAccount_thenReturnAdminSpecificMessage() {
         // given
         var username = "username";
-        var expected = String.format("Signed in with privileged account '%s'", username)
-                + System.lineSeparator()
-                + "You have not booked any tickets yet";
+        var greetLine = String.format("Signed in with privileged account '%s'", username);
+        var expected = List.of(greetLine,
+                "You have not booked any tickets yet");
         when(securityService.username())
                 .thenReturn(Optional.of(username));
         when(securityService.isAuthenticated())
