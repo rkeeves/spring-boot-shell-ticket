@@ -1,6 +1,6 @@
 package com.epam.training.ticketservice.shell.command;
 
-import com.epam.training.ticketservice.core.security.SecurityService;
+import com.epam.training.ticketservice.core.security.service.SecurityService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

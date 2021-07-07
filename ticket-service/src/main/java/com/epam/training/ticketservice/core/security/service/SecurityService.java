@@ -1,4 +1,4 @@
-package com.epam.training.ticketservice.core.security;
+package com.epam.training.ticketservice.core.security.service;
 
 import java.util.Optional;
 

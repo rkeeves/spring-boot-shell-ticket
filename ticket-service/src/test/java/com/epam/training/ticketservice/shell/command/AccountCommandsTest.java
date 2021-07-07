@@ -1,8 +1,8 @@
 package com.epam.training.ticketservice.shell.command;
 
-import com.epam.training.ticketservice.core.security.SecurityService;
-import com.epam.training.ticketservice.core.security.SignInSignOutService;
-import com.epam.training.ticketservice.core.security.SignUpService;
+import com.epam.training.ticketservice.core.security.service.SecurityService;
+import com.epam.training.ticketservice.core.security.service.SignInSignOutService;
+import com.epam.training.ticketservice.core.security.service.SignUpService;
 import com.epam.training.ticketservice.core.security.exception.AccountAlreadyExistsException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

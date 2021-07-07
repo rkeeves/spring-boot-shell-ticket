@@ -1,6 +1,6 @@
 package com.epam.training.ticketservice.shell.command;
 
-import com.epam.training.ticketservice.core.security.SecurityService;
+import com.epam.training.ticketservice.core.security.service.SecurityService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
