@@ -1,15 +1,17 @@
 package com.epam.training.ticketservice.shell.command;
 
+import com.epam.training.ticketservice.core.security.exception.AccountAlreadyExistsException;
 import com.epam.training.ticketservice.core.security.service.SecurityService;
 import com.epam.training.ticketservice.core.security.service.SignInSignOutService;
 import com.epam.training.ticketservice.core.security.service.SignUpService;
-import com.epam.training.ticketservice.core.security.exception.AccountAlreadyExistsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @ShellComponent
@@ -68,20 +70,19 @@ public class AccountCommands extends SecuredCommand {
     @ShellMethod(
             key = {"describe account"},
             value = "Describes the currently signed in user")
-    public String describeAccount() {
+    public List<String> describeAccount() {
         var usernameOptional = getSecurityService().username();
         if (usernameOptional.isEmpty() || !getSecurityService().isAuthenticated()) {
-            return "You are not signed in";
+            return List.of("You are not signed in");
         }
+        var lines = new ArrayList<String>();
         var username = usernameOptional.get();
-        StringBuilder sb = new StringBuilder();
         if (getSecurityService().isPrivileged()) {
-            sb.append(String.format("Signed in with privileged account '%s'", username));
+            lines.add(String.format("Signed in with privileged account '%s'", username));
         } else {
-            sb.append(String.format("Signed in with account '%s'", username));
+            lines.add(String.format("Signed in with account '%s'", username));
         }
-        sb.append(System.lineSeparator());
-        sb.append("You have not booked any tickets yet");
-        return sb.toString();
+        lines.add("You have not booked any tickets yet");
+        return lines;
     }
 }
