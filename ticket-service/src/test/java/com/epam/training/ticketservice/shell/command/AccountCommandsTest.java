@@ -1,9 +1,9 @@
 package com.epam.training.ticketservice.shell.command;
 
+import com.epam.training.ticketservice.core.security.exception.AccountAlreadyExistsException;
 import com.epam.training.ticketservice.core.security.service.SecurityService;
 import com.epam.training.ticketservice.core.security.service.SignInSignOutService;
 import com.epam.training.ticketservice.core.security.service.SignUpService;
-import com.epam.training.ticketservice.core.security.exception.AccountAlreadyExistsException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,10 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,8 +46,7 @@ class AccountCommandsTest {
         // when
         var result = accountCommands.signIn(username, password);
         // then
-        assertTrue(result.isPresent());
-        assertEquals("Login failed due to incorrect credentials", result.get());
+        assertEquals(List.of("Login failed due to incorrect credentials"), result);
         verify(signInSignOutService, times(1))
                 .signIn(username, password);
         verifyNoMoreInteractions(securityService);
@@ -64,8 +65,7 @@ class AccountCommandsTest {
         // when
         var result = accountCommands.signIn(username, password);
         // then
-        assertTrue(result.isPresent());
-        assertEquals("Login failed due to incorrect credentials", result.get());
+        assertEquals(List.of("Login failed due to incorrect credentials"), result);
         verify(signInSignOutService, times(1))
                 .signIn(username, password);
         verifyNoMoreInteractions(securityService);
@@ -84,8 +84,7 @@ class AccountCommandsTest {
         // when
         var result = accountCommands.signIn(username, password);
         // then
-        assertTrue(result.isPresent());
-        assertEquals("Login failed due to general error", result.get());
+        assertEquals(List.of("Login failed due to general error"), result);
         verify(signInSignOutService, times(1))
                 .signIn(username, password);
         verifyNoMoreInteractions(securityService);
@@ -113,10 +112,11 @@ class AccountCommandsTest {
     void given_whenSignOut_thenReturnNothing() {
         // given
         // when
-        accountCommands.signOut();
+        var result = accountCommands.signOut();
         // then
-        verify(signInSignOutService, times(1))
+       verify(signInSignOutService, times(1))
                 .signOut();
+        assertEquals(Collections.emptyList(), result);
         verifyNoMoreInteractions(securityService);
     }
 
@@ -147,8 +147,7 @@ class AccountCommandsTest {
         // when
         var result = accountCommands.signUp(username, password);
         // then
-        assertTrue(result.isPresent());
-        assertEquals("Sign up failed, user by this username already exists", result.get());
+        assertEquals(List.of("Sign up failed, user by this username already exists"), result);
         verify(signUpService, times(1))
                 .signUp(username, password);
         verifyNoMoreInteractions(securityService);
@@ -167,8 +166,7 @@ class AccountCommandsTest {
         // when
         var result = accountCommands.signUp(username, password);
         // then
-        assertTrue(result.isPresent());
-        assertEquals("Sign up failed due to general error", result.get());
+        assertEquals(List.of("Sign up failed due to general error"), result);
         verify(signUpService, times(1))
                 .signUp(username, password);
         verifyNoMoreInteractions(securityService);
