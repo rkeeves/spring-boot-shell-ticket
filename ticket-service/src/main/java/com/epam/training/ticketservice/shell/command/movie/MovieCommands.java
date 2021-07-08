@@ -6,6 +6,7 @@ import com.epam.training.ticketservice.shell.command.SecuredCommand;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellMethodAvailability;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -39,6 +40,7 @@ public class MovieCommands extends SecuredCommand {
     @ShellMethod(
             key = {"create movie"},
             value = "Creates a movie by the given title, genre and duration (in minutes)")
+    @ShellMethodAvailability("isPrivileged")
     public List<String> createMovie(String title, String genre, int durationInMinutes) {
         try {
             movieService.create(title, genre, durationInMinutes);
@@ -53,6 +55,7 @@ public class MovieCommands extends SecuredCommand {
     @ShellMethod(
             key = {"update movie"},
             value = "Updates a movie by the given title, genre and duration (in minutes)")
+    @ShellMethodAvailability("isPrivileged")
     public List<String> updateMovie(String title, String genre, int durationInMinutes) {
         try {
             movieService.updateByTitle(title, genre, durationInMinutes);
@@ -67,6 +70,7 @@ public class MovieCommands extends SecuredCommand {
     @ShellMethod(
             key = {"delete movie"},
             value = "Deletes a movie by the given title")
+    @ShellMethodAvailability("isPrivileged")
     public List<String> deleteMovie(String title) {
         try {
             movieService.deleteByTitle(title);
