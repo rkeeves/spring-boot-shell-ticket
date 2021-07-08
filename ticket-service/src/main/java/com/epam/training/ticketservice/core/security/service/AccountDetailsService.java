@@ -16,7 +16,7 @@ public class AccountDetailsService implements UserDetailsService {
     private final AccountRepository accountRepository;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, rollbackFor = UsernameNotFoundException.class)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return accountRepository.findByUsername(username)
                 .map(AccountToUserDetailsAdapter::new)

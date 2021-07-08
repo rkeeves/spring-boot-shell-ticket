@@ -17,7 +17,7 @@ public class DefaultSignUpService implements SignUpService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = AccountAlreadyExistsException.class)
     public void signUp(String username, String password) throws AccountAlreadyExistsException {
         var userExists = accountRepository.findByUsername(username).isPresent();
         if (userExists) {
