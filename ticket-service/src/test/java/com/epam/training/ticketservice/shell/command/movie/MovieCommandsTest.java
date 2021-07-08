@@ -132,7 +132,7 @@ class MovieCommandsTest {
     }
 
     @Test
-    void givenServiceSucceeds_whenCreateMovie_thenReturnEmptyList() {
+    void givenServiceSucceeds_whenUpdateMovie_thenReturnEmptyList() {
         // given
         var title = "some title";
         var genre = "some genre";
