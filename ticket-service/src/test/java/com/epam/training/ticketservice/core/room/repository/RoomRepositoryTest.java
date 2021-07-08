@@ -198,4 +198,36 @@ class RoomRepositoryTest {
         // then
         assertThrows(ConstraintViolationException.class, () -> testEntityManager.flush());
     }
+
+    @Test
+    void givenRoomExistsByName_whenFindByName_thenReturnsRoom() {
+        // given
+        var name = "name";
+        var rows = 21;
+        var columns = 10;
+        var room = Room.builder()
+                .name(name)
+                .rows(rows)
+                .columns(columns)
+                .build();
+        roomRepository.save(room);
+        // when
+        var result = roomRepository.findByName(name);
+        // then
+        assertTrue(result.isPresent());
+        var actual = result.get();
+        assertEquals(name, actual.getName());
+        assertEquals(rows, actual.getRows());
+        assertEquals(columns, actual.getColumns());
+    }
+
+    @Test
+    void givenRoomDoesNotExistByName_whenFindByName_thenReturnsEmpty() {
+        // given
+        var name = "name";
+        // when
+        var result = roomRepository.findByName(name);
+        // then
+        assertTrue(result.isEmpty());
+    }
 }
