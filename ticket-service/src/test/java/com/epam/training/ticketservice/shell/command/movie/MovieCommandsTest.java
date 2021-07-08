@@ -1,4 +1,4 @@
-package com.epam.training.ticketservice.shell.command;
+package com.epam.training.ticketservice.shell.command.movie;
 
 import com.epam.training.ticketservice.core.movie.service.MovieService;
 import com.epam.training.ticketservice.core.security.service.SecurityService;

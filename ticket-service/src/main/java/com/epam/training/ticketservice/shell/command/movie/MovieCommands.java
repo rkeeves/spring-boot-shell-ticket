@@ -1,7 +1,8 @@
-package com.epam.training.ticketservice.shell.command;
+package com.epam.training.ticketservice.shell.command.movie;
 
 import com.epam.training.ticketservice.core.movie.service.MovieService;
 import com.epam.training.ticketservice.core.security.service.SecurityService;
+import com.epam.training.ticketservice.shell.command.SecuredCommand;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
