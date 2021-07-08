@@ -1,9 +1,10 @@
-package com.epam.training.ticketservice.shell.command;
+package com.epam.training.ticketservice.shell.command.account;
 
 import com.epam.training.ticketservice.core.security.exception.AccountAlreadyExistsException;
 import com.epam.training.ticketservice.core.security.service.SecurityService;
 import com.epam.training.ticketservice.core.security.service.SignInSignOutService;
 import com.epam.training.ticketservice.core.security.service.SignUpService;
+import com.epam.training.ticketservice.shell.command.SecuredCommand;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;

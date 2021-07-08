@@ -1,4 +1,4 @@
-package com.epam.training.ticketservice.shell.command;
+package com.epam.training.ticketservice.shell.command.account;
 
 import com.epam.training.ticketservice.core.security.exception.AccountAlreadyExistsException;
 import com.epam.training.ticketservice.core.security.service.SecurityService;
