@@ -39,7 +39,8 @@ public class Movie {
     private Integer durationInMinutes;
 
     @Builder
-    public Movie(Long id, @NotNull @NotEmpty String title,
+    public Movie(Long id,
+                 @NotNull @NotEmpty String title,
                  @NotNull @NotEmpty String genre,
                  @Min(value = 1) @NotNull Integer durationInMinutes) {
         this.id = id;
