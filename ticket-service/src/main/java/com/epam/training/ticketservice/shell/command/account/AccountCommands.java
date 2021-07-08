@@ -55,8 +55,10 @@ public class AccountCommands extends SecuredCommand {
         return Collections.emptyList();
     }
 
+    // create account had to be added because there's a typo in acceptance test movies.feature
+    // they probably meant sign up but who knows
     @ShellMethod(
-            key = {"sign up"},
+            key = {"sign up", "create account"},
             value = "Signs up with the given username and password a new user")
     public List<String> signUp(String username, String password) {
         try {
