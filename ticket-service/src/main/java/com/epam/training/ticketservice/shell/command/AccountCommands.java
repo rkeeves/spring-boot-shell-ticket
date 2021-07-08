@@ -11,8 +11,8 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @ShellComponent
 @ShellCommandGroup("account")
@@ -34,14 +34,14 @@ public class AccountCommands extends SecuredCommand {
             key = {"sign in", "sign in privileged"},
             value = "Signs in with the supplied username and password if the user exists")
     @ShellMethodAvailability("isNotAuthenticated")
-    public Optional<String> signIn(String username, String password) {
+    public List<String> signIn(String username, String password) {
         try {
             signInSignOutService.signIn(username, password);
-            return Optional.empty();
+            return Collections.emptyList();
         } catch (AuthenticationException e) {
-            return Optional.of("Login failed due to incorrect credentials");
+            return List.of("Login failed due to incorrect credentials");
         } catch (Exception e) {
-            return Optional.of("Login failed due to general error");
+            return List.of("Login failed due to general error");
         }
     }
 
@@ -49,21 +49,22 @@ public class AccountCommands extends SecuredCommand {
             key = {"sign out"},
             value = "Signs out the current user if it exists")
     @ShellMethodAvailability("isAuthenticated")
-    public void signOut() {
+    public List<String> signOut() {
         signInSignOutService.signOut();
+        return Collections.emptyList();
     }
 
     @ShellMethod(
             key = {"sign up"},
             value = "Signs up with the given username and password a new user")
-    public Optional<String> signUp(String username, String password) {
+    public List<String> signUp(String username, String password) {
         try {
             signUpService.signUp(username, password);
-            return Optional.empty();
+            return Collections.emptyList();
         } catch (AccountAlreadyExistsException e) {
-            return Optional.of("Sign up failed, user by this username already exists");
+            return List.of("Sign up failed, user by this username already exists");
         } catch (Exception e) {
-            return Optional.of("Sign up failed due to general error");
+            return List.of("Sign up failed due to general error");
         }
     }
 
