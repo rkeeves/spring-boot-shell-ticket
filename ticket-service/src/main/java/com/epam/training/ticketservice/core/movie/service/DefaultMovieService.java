@@ -27,7 +27,7 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = EntityExistsException.class)
     public void create(String title, String genre, int durationInMinutes) throws EntityExistsException {
         var result = movieRepository.findByTitle(title);
         if (result.isPresent()) {
@@ -42,7 +42,7 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = EntityNotFoundException.class)
     public void updateByTitle(String title, String genre, int durationInMinutes) throws EntityNotFoundException {
         var result = movieRepository.findByTitle(title);
         if (result.isEmpty()) {
@@ -55,7 +55,7 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = EntityNotFoundException.class)
     public void deleteByTitle(String title) throws EntityNotFoundException {
         var result = movieRepository.findByTitle(title);
         if (result.isEmpty()) {
