@@ -4,7 +4,7 @@ import org.springframework.shell.Shell;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ShellEvaluator implements EnterCommandStep, ExpectOutputStep {
 
@@ -29,5 +29,10 @@ public class ShellEvaluator implements EnterCommandStep, ExpectOutputStep {
     @Override
     public void expectOutput(String... lines) {
         assertEquals(Arrays.asList(lines), shell.evaluate(() -> command));
+    }
+
+    public static void commandIsNotAvailable(Shell shell, String command) {
+        var method = shell.listCommands().get(command);
+        assertFalse(method.getAvailability().isAvailable());
     }
 }
