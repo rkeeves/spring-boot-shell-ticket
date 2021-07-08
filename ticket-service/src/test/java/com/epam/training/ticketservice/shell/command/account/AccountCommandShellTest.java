@@ -7,6 +7,7 @@ import org.springframework.shell.Shell;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import static com.epam.training.ticketservice.shell.evaluator.ShellEvaluator.commandIsNotAvailable;
 import static com.epam.training.ticketservice.shell.evaluator.ShellEvaluator.usingShell;
 
 @SpringBootTest
@@ -16,6 +17,23 @@ class AccountCommandShellTest {
     @Autowired
     private Shell shell;
 
+    @Test
+    @DirtiesContext
+    void aNotAuthenticatedUserCannotSignOut() {
+        commandIsNotAvailable(shell, "sign out");
+    }
+
+    @Test
+    @DirtiesContext
+    void anAuthenticatedUserCannotSignInButMustSignOutFirst() {
+        usingShell(shell)
+                .afterCommand("create account sanyi asdQWE123")
+                .expectOutput();
+        usingShell(shell)
+                .afterCommand("sign in sanyi asdQWE123")
+                .expectOutput();
+        commandIsNotAvailable(shell, "sign in");
+    }
 
     @Test
     @DirtiesContext
