@@ -33,12 +33,12 @@ public class Room {
 
     @NotNull
     @Min(value = 1)
-    @Column
+    @Column(name = "seating_rows")
     private Integer rows;
 
     @NotNull
     @Min(value = 1)
-    @Column
+    @Column(name = "seating_columns")
     private Integer columns;
 
     @OneToMany(mappedBy = "room",
