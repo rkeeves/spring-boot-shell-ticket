@@ -46,7 +46,14 @@ public class DefaultScreeningService implements ScreeningService {
                 .orElseThrow(() -> new EntityNotFoundException("Movie " + movieTitle + " does not exist"));
         var room = roomRepository.findByName(roomName)
                 .orElseThrow(() -> new EntityNotFoundException("Room " + roomName + " does not exist"));
-        screeningTimeClashService.checkNoClash(movie.getDurationInMinutes(), room, startDateTime);
+        LocalDateTime endDateTime = startDateTime.plusMinutes(movie.getDurationInMinutes());
+        var screenings = screeningRepository.findAllByRoom(room);
+        for (var screening : screenings) {
+            var existingStart = screening.getId().getStartDateTime();
+            var existingDuration = screening.getMovie().getDurationInMinutes();
+            screeningTimeClashService.check(startDateTime, endDateTime, existingStart, existingDuration);
+        }
+
         var screening = Screening.builder()
                 .movie(movie)
                 .room(room)
@@ -57,7 +64,7 @@ public class DefaultScreeningService implements ScreeningService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = EntityNotFoundException.class)
     public void deleteScreening(String movieTitle, String roomName, LocalDateTime startDateTime) {
         int deletedRows = screeningRepository.deleteByMovieTitleAndRoomNameAndIdStartDateTime(movieTitle,
                 roomName,
