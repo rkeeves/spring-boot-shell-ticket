@@ -21,12 +21,15 @@ public class ShellEvaluator {
 
     void eval(String userInputLine) {
         var result = shell.evaluate(QuotedStringsEscapedAdapter.of(userInputLine));
+        if (result == null) {
+            fail(userInputLine + " returned null");
+        }
         if (result instanceof CommandNotCurrentlyAvailable) {
             fail(userInputLine + " was NOT available");
         }
         try {
-            List<String> list = (List<String>) result;
-            list.forEach(output::add);
+            List<String> list = cast(result);
+            output.addAll(list);
         } catch (ClassCastException e) {
             fail(userInputLine + " result was not a string list");
         }
@@ -39,5 +42,10 @@ public class ShellEvaluator {
     boolean isAvailable(String shellCommand) {
         var command = shell.listCommands().get(shellCommand);
         return command.getAvailability().isAvailable();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends List<?>> T cast(Object obj) {
+        return (T) obj;
     }
 }
