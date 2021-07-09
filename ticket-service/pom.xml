@@ -23,6 +23,7 @@
         <junit.version>5.7.1</junit.version>
 		<spring-boot.version>2.5.2</spring-boot.version>
 		<spring-shell.version>2.0.1.RELEASE</spring-shell.version>
+        <cucumber.version>6.9.1</cucumber.version>
     </properties>
 
     <dependencies>
@@ -83,6 +84,18 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
