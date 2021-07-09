@@ -49,7 +49,7 @@ public class ScreeningCommands  extends SecuredCommand {
         } catch (ScreeningTimeClashException e) {
             return List.of(e.getMessage());
         } catch (Exception e) {
-            return List.of("Failed to screening room due to general error");
+            return List.of("Failed to create screening due to general error");
         }
     }
 
