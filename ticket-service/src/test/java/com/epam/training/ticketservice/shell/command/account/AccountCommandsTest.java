@@ -1,5 +1,6 @@
 package com.epam.training.ticketservice.shell.command.account;
 
+import com.epam.training.ticketservice.core.booking.service.BookingService;
 import com.epam.training.ticketservice.core.security.exception.AccountAlreadyExistsException;
 import com.epam.training.ticketservice.core.security.service.SecurityService;
 import com.epam.training.ticketservice.core.security.service.SignInSignOutService;
@@ -12,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,9 @@ class AccountCommandsTest {
 
     @Mock
     private SignUpService signUpService;
+
+    @Mock
+    private BookingService bookingService;
 
     @InjectMocks
     private AccountCommands accountCommands;
@@ -203,6 +208,8 @@ class AccountCommandsTest {
                 .thenReturn(true);
         when(securityService.isPrivileged())
                 .thenReturn(false);
+        when(bookingService.listBookingsByAccount(username))
+                .thenReturn(Collections.emptyList());
         // when
         var result = accountCommands.describeAccount();
         // then
@@ -213,9 +220,12 @@ class AccountCommandsTest {
                 .isPrivileged();
         verify(securityService, times(1))
                 .username();
+        verify(bookingService, times(1))
+                .listBookingsByAccount(username);
         verifyNoMoreInteractions(securityService);
         verifyNoMoreInteractions(signInSignOutService);
         verifyNoMoreInteractions(signUpService);
+        verifyNoMoreInteractions(bookingService);
     }
 
     @Test
@@ -231,6 +241,8 @@ class AccountCommandsTest {
                 .thenReturn(true);
         when(securityService.isPrivileged())
                 .thenReturn(true);
+        when(bookingService.listBookingsByAccount(username))
+                .thenReturn(Collections.emptyList());
         // when
         var result = accountCommands.describeAccount();
         // then
@@ -241,8 +253,49 @@ class AccountCommandsTest {
                 .isPrivileged();
         verify(securityService, times(1))
                 .username();
+        verify(bookingService, times(1))
+                .listBookingsByAccount(username);
         verifyNoMoreInteractions(securityService);
         verifyNoMoreInteractions(signInSignOutService);
         verifyNoMoreInteractions(signUpService);
+        verifyNoMoreInteractions(bookingService);
+    }
+
+    @Test
+    void givenUserHasBookings_whenDescribeAccount_thenListBookings() {
+        // given
+        var username = "username";
+        var greetLine = String.format("Signed in with account '%s'", username);
+        List<String> bookingDescriptions = List.of(
+                "Seats (5,5), (5,6) on MovieA in room RoomA starting at 2021-03-15 10:45 for 3000 HUF",
+                "Seats (32,12) on MovieB in room RoomB starting at 2031-03-12 12:45 for 1500 HUF");
+        var expected = new ArrayList<String>();
+        expected.add(greetLine);
+        expected.add("Your previous bookings are");
+        expected.addAll(bookingDescriptions);
+        when(securityService.username())
+                .thenReturn(Optional.of(username));
+        when(securityService.isAuthenticated())
+                .thenReturn(true);
+        when(securityService.isPrivileged())
+                .thenReturn(false);
+        when(bookingService.listBookingsByAccount(username))
+                .thenReturn(bookingDescriptions);
+        // when
+        var result = accountCommands.describeAccount();
+        // then
+        assertEquals(expected, result);
+        verify(securityService, times(1))
+                .isAuthenticated();
+        verify(securityService, times(1))
+                .isPrivileged();
+        verify(securityService, times(1))
+                .username();
+        verify(bookingService, times(1))
+                .listBookingsByAccount(username);
+        verifyNoMoreInteractions(securityService);
+        verifyNoMoreInteractions(signInSignOutService);
+        verifyNoMoreInteractions(signUpService);
+        verifyNoMoreInteractions(bookingService);
     }
 }
