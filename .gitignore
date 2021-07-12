@@ -36,4 +36,6 @@ build/
 .secret/
 
 ### Ignore logs like spring-shell.log ###
-.log
+*.log
+/ticket-service/*.log
+/ticket-service-acceptance-tests/*.log
