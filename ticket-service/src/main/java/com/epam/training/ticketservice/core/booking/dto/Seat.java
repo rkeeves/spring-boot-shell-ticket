@@ -20,10 +20,16 @@ public class Seat implements Comparable<Seat> {
 
     @Override
     public int compareTo(Seat o) {
-        if (row < o.row || (row == o.row && column < o.column)) {
+        if (row < o.row) {
             return -1;
         }
-        if (row > o.row || (row == o.row && column > o.column)) {
+        if (row > o.row) {
+            return 1;
+        }
+        if (column < o.column) {
+            return -1;
+        }
+        if (column > o.column) {
             return 1;
         }
         return 0;
