@@ -49,3 +49,51 @@ Feature: allows users to book tickets for screenings, and show booking history
     Then the next line of the output is "Signed in with account 'sanyi'"
     And the next line of the output is "Your previous bookings are"
     And the next line of the output is "Seats (5,5) on Sátántangó in room Pedersoli starting at 2021-03-15 10:45 for 1500 HUF"
+
+  Scenario: when an admin deletes a room then associated bookings get deleted
+    Given the user types the "sign in sanyi asdQWE123" command
+    And the user types the "book Sátántangó Pedersoli \"2021-03-15 10:45\" \"5,5\"" command
+    And the user types the "describe account" command
+    And the next line of the output is "Signed in with account 'sanyi'"
+    And the next line of the output is "Your previous bookings are"
+    And the next line of the output is "Seats (5,5) on Sátántangó in room Pedersoli starting at 2021-03-15 10:45 for 1500 HUF"
+    And the user types the "sign out" command
+    And the user types the "sign in admin admin" command
+    When the user types the "delete room Pedersoli" command
+    And the user types the "sign out" command
+    And the user types the "sign in sanyi asdQWE123" command
+    And the user types the "describe account" command
+    Then the next line of the output is "Signed in with account 'sanyi'"
+    And the next line of the output is "You have not booked any tickets yet"
+
+  Scenario: when an admin deletes a movie then associated bookings get deleted
+    Given the user types the "sign in sanyi asdQWE123" command
+    And the user types the "book Sátántangó Pedersoli \"2021-03-15 10:45\" \"5,5\"" command
+    And the user types the "describe account" command
+    And the next line of the output is "Signed in with account 'sanyi'"
+    And the next line of the output is "Your previous bookings are"
+    And the next line of the output is "Seats (5,5) on Sátántangó in room Pedersoli starting at 2021-03-15 10:45 for 1500 HUF"
+    And the user types the "sign out" command
+    And the user types the "sign in admin admin" command
+    When the user types the "delete movie Sátántangó" command
+    And the user types the "sign out" command
+    And the user types the "sign in sanyi asdQWE123" command
+    And the user types the "describe account" command
+    Then the next line of the output is "Signed in with account 'sanyi'"
+    And the next line of the output is "You have not booked any tickets yet"
+
+  Scenario: when an admin deletes a screening then associated bookings get deleted
+    Given the user types the "sign in sanyi asdQWE123" command
+    And the user types the "book Sátántangó Pedersoli \"2021-03-15 10:45\" \"5,5\"" command
+    And the user types the "describe account" command
+    And the next line of the output is "Signed in with account 'sanyi'"
+    And the next line of the output is "Your previous bookings are"
+    And the next line of the output is "Seats (5,5) on Sátántangó in room Pedersoli starting at 2021-03-15 10:45 for 1500 HUF"
+    And the user types the "sign out" command
+    And the user types the "sign in admin admin" command
+    When the user types the "delete screening Sátántangó Pedersoli \"2021-03-15 10:45\"" command
+    And the user types the "sign out" command
+    And the user types the "sign in sanyi asdQWE123" command
+    And the user types the "describe account" command
+    Then the next line of the output is "Signed in with account 'sanyi'"
+    And the next line of the output is "You have not booked any tickets yet"
