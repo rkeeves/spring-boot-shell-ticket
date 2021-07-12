@@ -204,8 +204,6 @@ class AccountCommandsTest {
                 "You have not booked any tickets yet");
         when(securityService.username())
                 .thenReturn(Optional.of(username));
-        when(securityService.isAuthenticated())
-                .thenReturn(true);
         when(securityService.isPrivileged())
                 .thenReturn(false);
         when(bookingService.listBookingsByAccount(username))
@@ -214,8 +212,6 @@ class AccountCommandsTest {
         var result = accountCommands.describeAccount();
         // then
         assertEquals(expected, result);
-        verify(securityService, times(1))
-                .isAuthenticated();
         verify(securityService, times(1))
                 .isPrivileged();
         verify(securityService, times(1))
@@ -237,8 +233,6 @@ class AccountCommandsTest {
                 "You have not booked any tickets yet");
         when(securityService.username())
                 .thenReturn(Optional.of(username));
-        when(securityService.isAuthenticated())
-                .thenReturn(true);
         when(securityService.isPrivileged())
                 .thenReturn(true);
         when(bookingService.listBookingsByAccount(username))
@@ -247,8 +241,6 @@ class AccountCommandsTest {
         var result = accountCommands.describeAccount();
         // then
         assertEquals(expected, result);
-        verify(securityService, times(1))
-                .isAuthenticated();
         verify(securityService, times(1))
                 .isPrivileged();
         verify(securityService, times(1))
@@ -275,8 +267,6 @@ class AccountCommandsTest {
         expected.addAll(bookingDescriptions);
         when(securityService.username())
                 .thenReturn(Optional.of(username));
-        when(securityService.isAuthenticated())
-                .thenReturn(true);
         when(securityService.isPrivileged())
                 .thenReturn(false);
         when(bookingService.listBookingsByAccount(username))
@@ -285,8 +275,6 @@ class AccountCommandsTest {
         var result = accountCommands.describeAccount();
         // then
         assertEquals(expected, result);
-        verify(securityService, times(1))
-                .isAuthenticated();
         verify(securityService, times(1))
                 .isPrivileged();
         verify(securityService, times(1))
