@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +44,7 @@ public class DefaultBookingService implements BookingService {
     @Transactional(readOnly = true)
     public List<String> listBookingsByAccount(String username) {
         var owner = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("The user does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("The user does not exist"));
         Map<Screening, List<Booking>> map = owner.getBookings()
                 .stream()
                 .collect(groupingBy(Booking::getScreening));
@@ -85,12 +86,12 @@ public class DefaultBookingService implements BookingService {
     public MultiSeatBookingResponse book(MultiSeatBookingRequest request)
             throws MultiSeatBookingNotPossibleException {
         var owner = accountRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("The user does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("The user does not exist"));
         var screening = screeningRepository.findByMovieTitleAndRoomNameAndIdStartDateTime(
                 request.getMovieTitle(),
                 request.getRoomName(),
                 request.getStartDateTime())
-                .orElseThrow(() -> new RuntimeException("The screening does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("The screening does not exist"));
         var seats = request.getSeats();
 
         var errors = listErrors(screening, seats);
