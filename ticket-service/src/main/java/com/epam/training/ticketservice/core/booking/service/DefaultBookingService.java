@@ -8,7 +8,6 @@ import com.epam.training.ticketservice.core.booking.dto.Seat;
 import com.epam.training.ticketservice.core.booking.entity.Booking;
 import com.epam.training.ticketservice.core.booking.entity.BookingId;
 import com.epam.training.ticketservice.core.booking.exception.MultiSeatBookingNotPossibleException;
-import com.epam.training.ticketservice.core.booking.repository.BookingRepository;
 import com.epam.training.ticketservice.core.price.service.PriceService;
 import com.epam.training.ticketservice.core.screening.entity.Screening;
 import com.epam.training.ticketservice.core.screening.repository.ScreeningRepository;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +32,9 @@ public class DefaultBookingService implements BookingService {
 
     private final ScreeningRepository screeningRepository;
 
-    private final BookingRepository bookingRepository;
-
     private final PriceService priceService;
+
+    private final BookingValidator bookingValidator;
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -93,12 +91,7 @@ public class DefaultBookingService implements BookingService {
                 request.getStartDateTime())
                 .orElseThrow(() -> new EntityNotFoundException("The screening does not exist"));
         var seats = request.getSeats();
-
-        var errors = listErrors(screening, seats);
-        if (!errors.isEmpty()) {
-            throw new MultiSeatBookingNotPossibleException(errors);
-        }
-
+        bookingValidator.validate(screening, seats);
         var perSeatPrice = priceService.getPerSeatPriceBy(screening);
         saveAllBookings(screening, owner, seats, perSeatPrice);
         return MultiSeatBookingResponse.builder()
@@ -106,26 +99,6 @@ public class DefaultBookingService implements BookingService {
                 .seats(seats)
                 .build();
 
-    }
-
-    private List<String> listErrors(Screening screening, List<Seat> seats) {
-        var rows = screening.getRoom().getRows();
-        var columns = screening.getRoom().getColumns();
-        var errors = new ArrayList<String>();
-        for (var seat : seats) {
-            var row = seat.getRow();
-            var col = seat.getColumn();
-            if (row > rows || col > columns) {
-                errors.add(String.format("Seat (%d,%d) is invalid, room has %d rows and %d columns",
-                        row, col, rows, columns));
-            }
-            var existingBookings = bookingRepository
-                    .findAllByScreeningAndIdRowAndIdColumn(screening, row, col);
-            if (!existingBookings.isEmpty()) {
-                errors.add(String.format("Seat (%d,%d) is already taken", row, col));
-            }
-        }
-        return errors;
     }
 
     private void saveAllBookings(Screening screening, Account owner, List<Seat> seats, int perSeatPrice) {
