@@ -48,4 +48,8 @@ public class ShellEvaluator {
     private static <T extends List<?>> T cast(Object obj) {
         return (T) obj;
     }
+
+    public void clearOutputBuffer() {
+        output.clear();
+    }
 }
