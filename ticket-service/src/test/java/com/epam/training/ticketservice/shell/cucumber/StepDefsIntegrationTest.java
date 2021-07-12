@@ -29,6 +29,7 @@ public class StepDefsIntegrationTest extends SpringIntegrationTest {
 
     @When("the user types the {string} command")
     public void theUserTypes(String command) throws IOException {
+        clearOutputBuffer();
         evaluateUserInputLine(command);
     }
 
