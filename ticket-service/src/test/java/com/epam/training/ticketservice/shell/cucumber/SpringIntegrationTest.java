@@ -36,4 +36,8 @@ public class SpringIntegrationTest {
     protected boolean isAvailable(String shellCommand) {
         return shellEvaluator.isAvailable(shellCommand);
     }
+
+    protected void clearOutputBuffer() {
+        shellEvaluator.clearOutputBuffer();
+    }
 }
