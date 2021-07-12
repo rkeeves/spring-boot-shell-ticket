@@ -43,7 +43,10 @@ public class DefaultPriceService implements PriceService {
     }
 
     @Override
-    public void attachPriceComponentToScreening(String priceComponent, String movieTitle, String roomName, LocalDateTime startDateTime) {
+    public void attachPriceComponentToScreening(String priceComponent,
+                                                String movieTitle,
+                                                String roomName,
+                                                LocalDateTime startDateTime) {
         throw new RuntimeException();
     }
 }
