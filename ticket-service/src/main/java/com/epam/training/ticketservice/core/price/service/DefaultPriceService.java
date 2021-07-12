@@ -68,8 +68,7 @@ public class DefaultPriceService implements PriceService {
     @Override
     @Transactional
     public void attachPriceComponentToMovie(String priceName, String movieTitle) {
-        var priceComponent = priceComponentRepository.findByName(priceName)
-                .orElseThrow(() -> new EntityNotFoundException("Price component was not found"));
+        var priceComponent = findPriceComponentByName(priceName);
         var movie = movieRepository.findByTitle(movieTitle)
                 .orElseThrow(() -> new EntityNotFoundException("Movie was not found"));
         movie.getPriceComponents().add(priceComponent);
@@ -79,8 +78,7 @@ public class DefaultPriceService implements PriceService {
     @Override
     @Transactional
     public void attachPriceComponentToRoom(String priceName, String roomName) {
-        var priceComponent = priceComponentRepository.findByName(priceName)
-                .orElseThrow(() -> new EntityNotFoundException("Price component was not found"));
+        var priceComponent = findPriceComponentByName(priceName);
         var room = roomRepository.findByName(roomName)
                 .orElseThrow(() -> new EntityNotFoundException("Room was not found"));
         room.getPriceComponents().add(priceComponent);
@@ -93,13 +91,17 @@ public class DefaultPriceService implements PriceService {
                                                 String movieTitle,
                                                 String roomName,
                                                 LocalDateTime startDateTime) {
-        var priceComponent = priceComponentRepository.findByName(priceName)
-                .orElseThrow(() -> new EntityNotFoundException("Price component was not found"));
+        var priceComponent = findPriceComponentByName(priceName);
         var screening = screeningRepository.findByMovieTitleAndRoomNameAndIdStartDateTime(movieTitle,
                 roomName,
                 startDateTime)
-                .orElseThrow(() -> new EntityNotFoundException("Room was not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Screening was not found"));
         screening.getPriceComponents().add(priceComponent);
         screeningRepository.save(screening);
+    }
+
+    private PriceComponent findPriceComponentByName(String priceName) {
+        return priceComponentRepository.findByName(priceName)
+                .orElseThrow(() -> new EntityNotFoundException("Price component was not found"));
     }
 }
