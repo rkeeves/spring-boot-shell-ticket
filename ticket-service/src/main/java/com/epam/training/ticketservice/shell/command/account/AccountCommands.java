@@ -1,5 +1,6 @@
 package com.epam.training.ticketservice.shell.command.account;
 
+import com.epam.training.ticketservice.core.booking.service.BookingService;
 import com.epam.training.ticketservice.core.security.exception.AccountAlreadyExistsException;
 import com.epam.training.ticketservice.core.security.service.SecurityService;
 import com.epam.training.ticketservice.core.security.service.SignInSignOutService;
@@ -23,12 +24,16 @@ public class AccountCommands extends SecuredCommand {
 
     private final SignUpService signUpService;
 
+    private final BookingService bookingService;
+
     public AccountCommands(SecurityService securityService,
                            SignInSignOutService signInSignOutService,
-                           SignUpService signUpService) {
+                           SignUpService signUpService,
+                           BookingService bookingService) {
         super(securityService);
         this.signInSignOutService = signInSignOutService;
         this.signUpService = signUpService;
+        this.bookingService = bookingService;
     }
 
     @ShellMethod(
@@ -86,7 +91,13 @@ public class AccountCommands extends SecuredCommand {
         } else {
             lines.add(String.format("Signed in with account '%s'", username));
         }
-        lines.add("You have not booked any tickets yet");
+        var bookings = bookingService.listBookingsByAccount(username);
+        if (bookings.isEmpty()) {
+            lines.add("You have not booked any tickets yet");
+            return lines;
+        }
+        lines.add("Your previous bookings are");
+        lines.addAll(bookings);
         return lines;
     }
 }
