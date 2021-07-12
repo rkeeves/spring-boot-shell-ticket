@@ -313,4 +313,15 @@ class DefaultBookingServiceTest {
         verifyNoMoreInteractions(bookingValidator);
         verifyNoMoreInteractions(priceService);
     }
+
+    @Test
+    void givenAccountByUsernameDoesNotExist_whenListBookingsByAccount_thenThrow() {
+        // given
+        var username = "user";
+        when(accountRepository.findByUsername(username))
+                .thenReturn(Optional.empty());
+        // when
+        assertThrows(EntityNotFoundException.class, () -> bookingService.listBookingsByAccount(username));
+        // then
+    }
 }
