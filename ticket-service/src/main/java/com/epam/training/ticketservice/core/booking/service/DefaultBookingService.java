@@ -48,7 +48,6 @@ public class DefaultBookingService implements BookingService {
                 .collect(groupingBy(Booking::getScreening));
         return map.entrySet()
                 .stream()
-                .filter(entry -> !entry.getValue().isEmpty())
                 .map(entry -> bookingsGroupedByScreeningsToString(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
