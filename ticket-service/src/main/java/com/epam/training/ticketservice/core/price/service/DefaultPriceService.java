@@ -1,10 +1,18 @@
 package com.epam.training.ticketservice.core.price.service;
 
+import com.epam.training.ticketservice.core.movie.repository.MovieRepository;
+import com.epam.training.ticketservice.core.price.entity.PriceComponent;
+import com.epam.training.ticketservice.core.price.repository.PriceComponentRepository;
+import com.epam.training.ticketservice.core.room.repository.RoomRepository;
 import com.epam.training.ticketservice.core.screening.entity.Screening;
+import com.epam.training.ticketservice.core.screening.repository.ScreeningRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -12,14 +20,34 @@ public class DefaultPriceService implements PriceService {
 
     private int basePrice = 1500;
 
+    private final MovieRepository movieRepository;
+
+    private final RoomRepository roomRepository;
+
+    private final ScreeningRepository screeningRepository;
+
+    private final PriceComponentRepository priceComponentRepository;
+
     @Override
+    @Transactional(readOnly = true)
     public int getPerSeatPriceBy(String movieTitle, String roomName, LocalDateTime startDateTime) {
-        return 0;
+        var screening = screeningRepository.findByMovieTitleAndRoomNameAndIdStartDateTime(
+                movieTitle,
+                roomName,
+                startDateTime)
+                .orElseThrow(() -> new EntityNotFoundException("Screening not found"));
+        return getPerSeatPriceBy(screening);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int getPerSeatPriceBy(Screening screening) {
-        return basePrice;
+        var screeningPrices = screening.getPriceComponents().stream();
+        var moviePrices = screening.getMovie().getPriceComponents().stream();
+        var roomPrices =  screening.getRoom().getPriceComponents().stream();
+        return Stream.concat(roomPrices, Stream.concat(screeningPrices, moviePrices))
+                .mapToInt(PriceComponent::getPrice)
+                .reduce(basePrice, Integer::sum);
     }
 
     @Override
@@ -28,25 +56,50 @@ public class DefaultPriceService implements PriceService {
     }
 
     @Override
-    public void createPriceComponent(String name, int newBasePrice) {
-        throw new RuntimeException();
+    @Transactional
+    public void createPriceComponent(String name, int price) {
+        var priceComponent = PriceComponent.builder()
+                .name(name)
+                .price(price)
+                .build();
+        priceComponentRepository.save(priceComponent);
     }
 
     @Override
-    public void attachPriceComponentToMovie(String priceComponent, String movieTitle) {
-        throw new RuntimeException();
+    @Transactional
+    public void attachPriceComponentToMovie(String priceName, String movieTitle) {
+        var priceComponent = priceComponentRepository.findByName(priceName)
+                .orElseThrow(() -> new EntityNotFoundException("Price component was not found"));
+        var movie = movieRepository.findByTitle(movieTitle)
+                .orElseThrow(() -> new EntityNotFoundException("Movie was not found"));
+        movie.getPriceComponents().add(priceComponent);
+        movieRepository.save(movie);
     }
 
     @Override
-    public void attachPriceComponentToRoom(String priceComponent, String roomName) {
-        throw new RuntimeException();
+    @Transactional
+    public void attachPriceComponentToRoom(String priceName, String roomName) {
+        var priceComponent = priceComponentRepository.findByName(priceName)
+                .orElseThrow(() -> new EntityNotFoundException("Price component was not found"));
+        var room = roomRepository.findByName(roomName)
+                .orElseThrow(() -> new EntityNotFoundException("Room was not found"));
+        room.getPriceComponents().add(priceComponent);
+        roomRepository.save(room);
     }
 
     @Override
-    public void attachPriceComponentToScreening(String priceComponent,
+    @Transactional
+    public void attachPriceComponentToScreening(String priceName,
                                                 String movieTitle,
                                                 String roomName,
                                                 LocalDateTime startDateTime) {
-        throw new RuntimeException();
+        var priceComponent = priceComponentRepository.findByName(priceName)
+                .orElseThrow(() -> new EntityNotFoundException("Price component was not found"));
+        var screening = screeningRepository.findByMovieTitleAndRoomNameAndIdStartDateTime(movieTitle,
+                roomName,
+                startDateTime)
+                .orElseThrow(() -> new EntityNotFoundException("Room was not found"));
+        screening.getPriceComponents().add(priceComponent);
+        screeningRepository.save(screening);
     }
 }
