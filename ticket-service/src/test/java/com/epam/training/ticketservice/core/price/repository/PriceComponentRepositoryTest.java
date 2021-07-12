@@ -38,4 +38,14 @@ class PriceComponentRepositoryTest {
         assertEquals(name, actual.getName());
         assertEquals(price, actual.getPrice());
     }
+
+    @Test
+    void givenEntityDoesNotExist_whenFindByName_thenReturnEmpty() {
+        // given
+        var name = "somename";
+        // when
+        var result = priceComponentRepository.findByName(name);
+        // then
+        assertTrue(result.isEmpty());
+    }
 }
