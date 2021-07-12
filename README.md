@@ -2,7 +2,7 @@
 
 > Based on an [EPAM course material](https://github.com/epam-deik-cooperation/epam-deik-java-dev/tree/main/final) at DE IK PTI.
 
-A small Spring Shell application for managing movie tickets using Spring Boot. 
+Small Spring Shell application for managing movie tickets using Spring Boot. 
 
 ## Getting started
 
@@ -76,7 +76,7 @@ and most importantly: a simple shell program, aka no fancy things.
 The app has a clearly defined set of requirements that it must meet.
 These can be found under the **ticket-service-acceptance-tests** module.
 
-> For more info checkout [Details](DETAILS.md)
+> For more info checkout [Details](DETAILS.md), be aware: it's hungarian...
 
 All of them follow the gherkin/cucumber/BDD format, aka:
 
