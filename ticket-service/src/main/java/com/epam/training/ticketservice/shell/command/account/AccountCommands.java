@@ -81,7 +81,7 @@ public class AccountCommands extends SecuredCommand {
             value = "Describes the currently signed in user")
     public List<String> describeAccount() {
         var usernameOptional = getSecurityService().username();
-        if (usernameOptional.isEmpty() || !getSecurityService().isAuthenticated()) {
+        if (usernameOptional.isEmpty()) {
             return List.of("You are not signed in");
         }
         var lines = new ArrayList<String>();
