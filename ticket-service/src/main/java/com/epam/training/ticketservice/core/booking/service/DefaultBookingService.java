@@ -50,19 +50,19 @@ public class DefaultBookingService implements BookingService {
         return map.entrySet()
                 .stream()
                 .filter(entry -> !entry.getValue().isEmpty())
-                .map(entry -> {
-                    var screening = entry.getKey();
-                    var bookings = entry.getValue();
-                    var seatsAsString = bookingSeatsAsString(bookings);
-                    var sumPrice = sumPriceOfBookings(bookings);
-                    return String.format("Seats %s on %s in room %s starting at %s for %d HUF",
-                            seatsAsString,
-                            screening.getMovie().getTitle(),
-                            screening.getRoom().getName(),
-                            screening.getId().getStartDateTime().format(dateTimeFormatter),
-                            sumPrice);
-                })
+                .map(entry -> bookingsGroupedByScreeningsToString(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
+    }
+
+    private String bookingsGroupedByScreeningsToString(Screening screening, List<Booking> bookings) {
+        var seatsAsString = bookingSeatsAsString(bookings);
+        var sumPrice = sumPriceOfBookings(bookings);
+        return String.format("Seats %s on %s in room %s starting at %s for %d HUF",
+                seatsAsString,
+                screening.getMovie().getTitle(),
+                screening.getRoom().getName(),
+                screening.getId().getStartDateTime().format(dateTimeFormatter),
+                sumPrice);
     }
 
     private String bookingSeatsAsString(Collection<Booking> bookings) {
@@ -82,20 +82,22 @@ public class DefaultBookingService implements BookingService {
 
     @Override
     @Transactional(rollbackFor = { MultiSeatBookingNotPossibleException.class })
-    public MultiSeatBookingResponse book(MultiSeatBookingRequest multiSeatBookingRequest)
+    public MultiSeatBookingResponse book(MultiSeatBookingRequest request)
             throws MultiSeatBookingNotPossibleException {
-        var owner = accountRepository.findByUsername(multiSeatBookingRequest.getUsername())
+        var owner = accountRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("The user does not exist"));
         var screening = screeningRepository.findByMovieTitleAndRoomNameAndIdStartDateTime(
-                multiSeatBookingRequest.getMovieTitle(),
-                multiSeatBookingRequest.getRoomName(),
-                multiSeatBookingRequest.getStartDateTime())
+                request.getMovieTitle(),
+                request.getRoomName(),
+                request.getStartDateTime())
                 .orElseThrow(() -> new RuntimeException("The screening does not exist"));
-        var seats = multiSeatBookingRequest.getSeats();
+        var seats = request.getSeats();
+
         var errors = listErrors(screening, seats);
         if (!errors.isEmpty()) {
             throw new MultiSeatBookingNotPossibleException(errors);
         }
+
         var perSeatPrice = priceService.getPerSeatPriceBy(screening);
         saveAllBookings(screening, owner, seats, perSeatPrice);
         return MultiSeatBookingResponse.builder()
@@ -116,9 +118,9 @@ public class DefaultBookingService implements BookingService {
                 errors.add(String.format("Seat (%d,%d) is invalid, room has %d rows and %d columns",
                         row, col, rows, columns));
             }
-            var existingBooking = bookingRepository.findAllByScreeningAndIdRowAndIdColumn(screening,
-                    row, col);
-            if (!existingBooking.isEmpty()) {
+            var existingBookings = bookingRepository
+                    .findAllByScreeningAndIdRowAndIdColumn(screening, row, col);
+            if (!existingBookings.isEmpty()) {
                 errors.add(String.format("Seat (%d,%d) is already taken", row, col));
             }
         }
@@ -126,22 +128,24 @@ public class DefaultBookingService implements BookingService {
     }
 
     private void saveAllBookings(Screening screening, Account owner, List<Seat> seats, int perSeatPrice) {
-        for (var seat : seats) {
-            var row = seat.getRow();
-            var col = seat.getColumn();
-            var bookingId = BookingId.builder()
-                    .screeningId(screening.getId())
-                    .row(row)
-                    .column(col)
-                    .build();
-            var booking = Booking.builder()
-                    .id(bookingId)
-                    .owner(owner)
-                    .screening(screening)
-                    .price(perSeatPrice)
-                    .build();
-            screening.getBookings().add(booking);
-        }
+        var bookings = screening.getBookings();
+        seats.stream()
+                .map(seat -> createBooking(screening, seat.getRow(), seat.getColumn(), owner, perSeatPrice))
+                .forEach(bookings::add);
         screeningRepository.save(screening);
+    }
+
+    private Booking createBooking(Screening screening, int row, int col, Account owner, int perSeatPrice) {
+        var bookingId = BookingId.builder()
+                .screeningId(screening.getId())
+                .row(row)
+                .column(col)
+                .build();
+        return Booking.builder()
+                .id(bookingId)
+                .owner(owner)
+                .screening(screening)
+                .price(perSeatPrice)
+                .build();
     }
 }
