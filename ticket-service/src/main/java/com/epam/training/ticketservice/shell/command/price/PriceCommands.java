@@ -37,7 +37,6 @@ public class PriceCommands extends SecuredCommand {
     @ShellMethod(
             key = {"show price for"},
             value = "Shows the price for the given booking")
-    @ShellMethodAvailability("isPrivileged")
     public List<String> showPriceFor(String movieTitle,
                                      String roomName,
                                      LocalDateTime startDateTime,
@@ -52,7 +51,7 @@ public class PriceCommands extends SecuredCommand {
     }
 
     @ShellMethod(
-            key = {"creates price component"},
+            key = {"create price component"},
             value = "Creates a price component")
     @ShellMethodAvailability("isPrivileged")
     public List<String> createPriceComponent(String priceComponent, int fee) {
