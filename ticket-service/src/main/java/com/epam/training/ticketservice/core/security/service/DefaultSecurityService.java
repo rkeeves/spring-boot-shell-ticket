@@ -23,9 +23,6 @@ public class DefaultSecurityService implements SecurityService {
     @Override
     public boolean isPrivileged() {
         return currentAuthenticationService.getAuthentication()
-                .flatMap(authentication -> {
-                    return  authentication.isAuthenticated() ? Optional.of(authentication) : Optional.empty();
-                })
                 .map(Authentication::getAuthorities)
                 .map(authorities -> authorities.stream()
                         .map(GrantedAuthority::getAuthority)
